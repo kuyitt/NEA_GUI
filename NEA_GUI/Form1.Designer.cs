@@ -28,10 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             Send = new Button();
             formatBox = new TextBox();
             displayBox = new TextBox();
             lineCounter = new TextBox();
+            timer1 = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // Send
@@ -69,6 +71,10 @@
             lineCounter.Size = new Size(57, 23);
             lineCounter.TabIndex = 4;
             // 
+            // timer1
+            // 
+            timer1.Tick += timer1_Tick;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -91,5 +97,6 @@
         private TextBox formatBox;
         private TextBox displayBox;
         private TextBox lineCounter;
+        private System.Windows.Forms.Timer timer1;
     }
 }
