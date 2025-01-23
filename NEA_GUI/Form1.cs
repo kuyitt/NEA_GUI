@@ -30,7 +30,7 @@ namespace NEA_GUI
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             int port = 16000;
-            IPAddress IP = IPAddress.Parse("127.0.0.1");
+            IPAddress IP = IPAddress.Parse("192.168.0.23");
 
             TcpListener server = new TcpListener(IP, port);
 
@@ -43,7 +43,7 @@ namespace NEA_GUI
 
             while (true)
             {
-                Invoke(new Action(() => displayBox.AppendText("Waiting for connection..." + Environment.NewLine)));
+                Invoke(new Action(() => displayBox.AppendText("Waiting for connection... on " + Environment.NewLine)));
 
                 // var startClient = new tcpClient();
                 // startClient.Connect();
