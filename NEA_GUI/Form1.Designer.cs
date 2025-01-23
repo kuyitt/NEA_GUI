@@ -28,12 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             Send = new Button();
             formatBox = new TextBox();
             displayBox = new TextBox();
             lineCounter = new TextBox();
-            timer1 = new System.Windows.Forms.Timer(components);
+            backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             SuspendLayout();
             // 
             // Send
@@ -71,9 +70,9 @@
             lineCounter.Size = new Size(57, 23);
             lineCounter.TabIndex = 4;
             // 
-            // timer1
+            // backgroundWorker1
             // 
-            timer1.Tick += timer1_Tick;
+            backgroundWorker1.DoWork += backgroundWorker1_DoWork;
             // 
             // Form1
             // 
@@ -97,6 +96,6 @@
         private TextBox formatBox;
         private TextBox displayBox;
         private TextBox lineCounter;
-        private System.Windows.Forms.Timer timer1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

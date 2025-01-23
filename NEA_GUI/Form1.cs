@@ -7,17 +7,18 @@ namespace NEA_GUI
 {
     public partial class Form1 : Form
     {
-        
         public Form1()
         {
             InitializeComponent();
+            backgroundWorker1.RunWorkerAsync();
         }
         private void Send_Click(object sender, EventArgs e)
         {
             string msg;
             msg = formatBox.Text;
-            displayBox.AppendText(msg + Environment.NewLine);
-            formatBox.Text = string.Empty;
+
+            tcpClient client = new tcpClient();
+            client.Connect(msg);
         }
         public void displayBox_TextChanged(object sender, EventArgs e)
         {
@@ -25,39 +26,59 @@ namespace NEA_GUI
             lineCount = displayBox.GetLineFromCharIndex(displayBox.TextLength);
             lineCounter.Text = Convert.ToString(lineCount);
         }
-        public void timer1_Tick(object sender, EventArgs e)
+
+        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-           Server recieve = new Server();
-            displayBox.AppendText(recieve.msg + Environment.NewLine);
-        }
+            int port = 16000;
+            IPAddress IP = IPAddress.Parse("127.0.0.1");
 
-        
-    }
+            TcpListener server = new TcpListener(IP, port);
 
-    public class Server
-    {
-        public string msg = "";
-        public Server()
-        {
-            TcpListener listener;
-            var port = 16000;
-            var serverIP = IPAddress.Parse("127.0.0.1");
-            byte[] buffer = new byte[512];
-            listener = new TcpListener(serverIP, port);
-            listener.Start();
+            server.Start();
 
-            using TcpClient tcpClient = listener.AcceptTcpClient();
+            int bufferSize = 256;
 
-            var netStream = tcpClient.GetStream();
-            int streamLength;
-            while ((streamLength = netStream.Read(buffer, 0, buffer.Length)) != 0)
+            byte[] rawData = new byte[bufferSize];
+            string msg = string.Empty;
+
+            while (true)
             {
-                msg = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+                Invoke(new Action(() => displayBox.AppendText("Waiting for connection..." + Environment.NewLine)));
 
+                // var startClient = new tcpClient();
+                // startClient.Connect();
+
+                using TcpClient client = server.AcceptTcpClient();
+                Invoke(new Action(() => displayBox.AppendText("Connected" + Environment.NewLine)));
+
+                NetworkStream clientStream = client.GetStream();
+                int dataLength;
+
+                while ((dataLength = clientStream.Read(rawData, 0, bufferSize)) != 0)
+                {
+                    msg = Encoding.UTF8.GetString(rawData, 0, dataLength);
+                    Invoke(new Action(() => displayBox.AppendText(msg + Environment.NewLine)));
+                    }
+                }
             }
-
-
         }
     }
 
+class tcpClient
+{
+    public void Connect(string msg)
+    {
+        int port = 16000;
+        string IP = "127.0.0.1";
+
+        using TcpClient client = new TcpClient(IP, port);
+        
+        byte[] msgByte = Encoding.UTF8.GetBytes(msg);
+
+        NetworkStream clientStream = client.GetStream();
+        clientStream.Write(msgByte, 0, msgByte.Length);
+
+    }
 }
+
+
