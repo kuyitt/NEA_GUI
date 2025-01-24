@@ -30,11 +30,18 @@ namespace NEA_GUI
             NetworkStream clientStream = activeClient.GetStream();
             clientStream.Write(msgByte, 0, msgByte.Length);
 
+            string responseString;
+            byte[] serverResponse = new byte[256];
+            int bytes = clientStream.Read(serverResponse, 0, serverResponse.Length);
+            responseString = Encoding.UTF8.GetString(serverResponse,0,bytes);
+
+            MessageBox.Show(responseString);
+
         }
         public TcpClient Connect()
         {
             int port = 16000;
-            string IP = "10.10.193.216";
+            string IP = "192.168.0.23";
 
             TcpClient client = new TcpClient(IP, port);
             clientNeeded = false;
@@ -56,7 +63,7 @@ namespace NEA_GUI
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             int port = 16000;
-            IPAddress IP = IPAddress.Parse("10.10.193.216");
+            IPAddress IP = IPAddress.Parse("192.168.0.23");
 
             TcpListener server = new TcpListener(IP, port);
 
@@ -81,6 +88,11 @@ namespace NEA_GUI
                 {
                     msg = Encoding.UTF8.GetString(rawData, 0, dataLength);
                     Invoke(new Action(() => displayBox.AppendText(msg + Environment.NewLine)));
+
+                    msg = msg.ToUpper();
+                    byte[] response = Encoding.UTF8.GetBytes(msg,0, dataLength);
+
+                    clientStream.Write(response, 0, response.Length);
                 }
             }
         }
