@@ -7,6 +7,8 @@ namespace NEA_GUI
 {
     public partial class Form1 : Form
     {
+        bool clientNeeded = true;
+        TcpClient activeClient;
         public Form1()
         {
             InitializeComponent();
@@ -17,8 +19,32 @@ namespace NEA_GUI
             string msg;
             msg = formatBox.Text;
 
-            tcpClient client = new tcpClient();
-            client.Connect(msg);
+            byte[] msgByte = Encoding.UTF8.GetBytes(msg);
+
+            if (clientNeeded == true)
+            {
+                activeClient = Connect();
+                clientNeeded = false;
+            }
+
+            NetworkStream clientStream = activeClient.GetStream();
+            clientStream.Write(msgByte, 0, msgByte.Length);
+
+        }
+        public TcpClient Connect()
+        {
+            int port = 16000;
+            string IP = "10.10.193.216";
+
+            TcpClient client = new TcpClient(IP, port);
+            clientNeeded = false;
+
+            return client;
+        }
+        public void DisposeClient(TcpClient client)
+        {
+            client.Close();
+            clientNeeded = true;
         }
         public void displayBox_TextChanged(object sender, EventArgs e)
         {
@@ -30,7 +56,7 @@ namespace NEA_GUI
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             int port = 16000;
-            IPAddress IP = IPAddress.Parse("192.168.0.23");
+            IPAddress IP = IPAddress.Parse("10.10.193.216");
 
             TcpListener server = new TcpListener(IP, port);
 
@@ -43,10 +69,7 @@ namespace NEA_GUI
 
             while (true)
             {
-                Invoke(new Action(() => displayBox.AppendText("Waiting for connection... on " + Environment.NewLine)));
-
-                // var startClient = new tcpClient();
-                // startClient.Connect();
+                Invoke(new Action(() => displayBox.AppendText("Waiting for connection... on " + IP + Environment.NewLine)));
 
                 using TcpClient client = server.AcceptTcpClient();
                 Invoke(new Action(() => displayBox.AppendText("Connected" + Environment.NewLine)));
@@ -58,27 +81,16 @@ namespace NEA_GUI
                 {
                     msg = Encoding.UTF8.GetString(rawData, 0, dataLength);
                     Invoke(new Action(() => displayBox.AppendText(msg + Environment.NewLine)));
-                    }
                 }
             }
         }
-    }
 
-class tcpClient
-{
-    public void Connect(string msg)
-    {
-        int port = 16000;
-        string IP = "127.0.0.1";
-
-        using TcpClient client = new TcpClient(IP, port);
-        
-        byte[] msgByte = Encoding.UTF8.GetBytes(msg);
-
-        NetworkStream clientStream = client.GetStream();
-        clientStream.Write(msgByte, 0, msgByte.Length);
-
+        private void Disconnect_Click(object sender, EventArgs e)
+        {
+            DisposeClient(activeClient);
+        }
     }
 }
+
 
 

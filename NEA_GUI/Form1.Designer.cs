@@ -33,6 +33,7 @@
             displayBox = new TextBox();
             lineCounter = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            Disconnect = new Button();
             SuspendLayout();
             // 
             // Send
@@ -74,12 +75,23 @@
             // 
             backgroundWorker1.DoWork += backgroundWorker1_DoWork;
             // 
+            // Disconnect
+            // 
+            Disconnect.Location = new Point(680, 41);
+            Disconnect.Name = "Disconnect";
+            Disconnect.Size = new Size(57, 43);
+            Disconnect.TabIndex = 5;
+            Disconnect.Text = "Disconnect";
+            Disconnect.UseVisualStyleBackColor = true;
+            Disconnect.Click += Disconnect_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(1362, 707);
+            Controls.Add(Disconnect);
             Controls.Add(lineCounter);
             Controls.Add(displayBox);
             Controls.Add(formatBox);
@@ -97,5 +109,6 @@
         private TextBox displayBox;
         private TextBox lineCounter;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private Button Disconnect;
     }
 }
